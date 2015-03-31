@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>web+android安全简介</title>
+
+		<meta name="description" content="web+android安全简介">
+		<meta name="author" content="qhwlpg">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h2>web+android安全简介</h2>
+					<h3></h3>
+					<p>
+						<small>Presented by <a href="https://github.com/qhwlpg/">qhwlpg</a> / <a href="http://www.wooyun.org/whitehats/qhwlpg">乌云qhwlpg</a> / <a href="https://butian.360.cn/vul/profile/u/qhwlpg">360补天qhwlpg</a></small>
+					</p>
+				</section>
+
+				<section>
+					<img src="./img/1.jpg">
+				</section>
+				<section>
+					<h2 align=left>一. WEB安全</h2>
+					<h2 align=left>二. ANDROID安全</h2>
+				</section>
+				<section>
+					<h3>常见的WEB攻击手法有</h3>
+					<p align=left>1. SQL注入</p>
+					<p align=left>2. XSS跨站脚本攻击</p>
+					<p align=left>3. CSRF跨站请求伪造</p>
+					<p align=left>4. Cookie欺骗</p>
+					<p align=left>5. 验证不充分（上传漏洞、文件包含、任意文件读取、变量覆盖、越权操作、平行权限）</p>
+					<p align=left>6. 逻辑漏洞</p>
+					<p align=left>7. 解析漏洞</p>
+					<p align=left>8. 第三方漏洞（WEB编辑器、WEB框架、WEB中间件）</p>
+					<p align=left>9. 信息泄漏（目录遍历、目录扫描、IIS短文件、IIS脚本资源访问、ASP.NET Padding Oracle 漏洞、爆路径、%5C暴库、Google Hack、robots.txt）</p>
+					<p align=left>10. 弱口令</p>
+				</section>
+				<section>
+					<h3>SQL注入</h3>
+					<p>由于程序中对用户输入检查不严格，用户可以提交一段数据库查询代码，根据程序返回的结果，获得某些他想得知的数据，这就是所谓的SQL Injection，即SQL注入。</p>
+				</section>
+				<section>
+					<h3>SQL注入的类型</h3>
+					<ul>
+						<li class="fragment">
+							按提交字符类型可分为： 数字型 字符型 搜索型
+						</li>
+						<li class="fragment">
+							按HTTP提交方式可分为： GET、POST、Cookie注入
+						</li>
+						<li class="fragment">
+							按注入方式可分为：  盲注 、 union注入、 报错注入、 基于时间注入
+						</li>
+						<li class="fragment">
+							编码问题：宽字节注入
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>如何判断SQL注入？</h2>
+					<p align=left>1. 单引号判断</p>
+					<p align=left>2. 数字型注入判断</p>
+					<p align=left>   ① and&nbsp;&nbsp;&nbsp;1=1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;&nbsp;&nbsp;1=2</p>  
+    				<p align=left>&nbsp;&nbsp;&nbsp;and&nbsp;&nbsp;&nbsp;1&nbsp;is null&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;&nbsp;&nbsp;1&nbsp;is&nbsp;not&nbsp;null </p>
+    				<p align=left>&nbsp;&nbsp;&nbsp;and user>0
+					<p align=left>	 ② 参数进行运算  +1  -1    '+'→'%2B'</p>
+					<p align=left>3. 字符型注入判断
+					<p align=left>	 ①'&nbsp;&nbsp;and&nbsp;&nbsp;'1'='1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'&nbsp;&nbsp;and&nbsp;&nbsp;'1'='2</p>
+					<p align=left>4. 搜索型注入判断</p>
+					<p align=left>	 ①test%'&nbsp;&nbsp;&nbsp;and&nbsp;&nbsp;1=1&nbsp;&nbsp;and&nbsp;&nbsp;'%'='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test%'&nbsp;&nbsp;&nbsp;and&nbsp;&nbsp;1=2&nbsp;&nbsp;and&nbsp;&nbsp;'%'='</p>
+				</section>
+				<section><a href="http://localhost:8888/sqlhj/">SQL注入演示</a></section>
+				<section>
+					<h3>XSS跨站脚本攻击</h3>
+					<p>XSS表示Cross Site Scripting(跨站脚本攻击),它与SQL注入攻击类似，SQL注入攻击中以SQL语句作为用户输入，从而达到查询/修改/删除数据的目的，而在xss攻击中，通过插入恶意脚本，实现对用户游览器的控制。</p>
+				</section>
+				<section>
+					<h2>XSS分类</h2>
+					<ul>
+						<li class="fragment">非持久型XSS</li>
+						<li class="fragment">持久性XSS</li>
+					</ul>
+				</section>
+				<section>
+					<a href="http://localhost:8888/xsshj/">XSS跨站脚本攻击演示</a>
+				</section>
+				<section>
+					<h2>CSRF跨站请求伪造</h2>
+					<p>你这可以这么理解CSRF攻击：攻击者盗用了你的身份，以你的名义发送恶意请求。CSRF能够做的事情包括：以你名义发送邮件，发消息，盗取你的账号，甚至于购买商品，虚拟货币转账......造成的问题包括：个人隐私泄露以及财产安全。</p>
+				</section>
+				<section>
+					<a href="http://localhost:8888/csrfhj/">CSRF跨站请求伪造演示</a>
+				</section>
+				<section>
+					<h2>Cookie欺骗</h2>
+					<p>Cookie：Web服务器存放在客户端计算机的一些信息，主要用来客户端识别或身份识别等。Session,保存在服务器端的。Cookie欺骗攻击：攻击者通过修改存放在客户端的cookie来达到欺骗服务器认证目的。</p>
+				</section>
+				<section>
+					<h2>验证不充分之上传漏洞</h2>
+					<p>①&nbsp;客户端检测(javascript检测)</p>
+					<p>②&nbsp;服务端检测(MIME类型检测)</p>
+					<p>③&nbsp;服务端检测(目录路径检测)</p>
+					<p>④&nbsp;服务端检测(文件扩展名检测)</p>
+				</section>
+				<section>
+					<h2>验证不充分之文件包含</h2>
+					<p>
+						易受攻击的代码片断：<br/>
+						<img src="./img/2.jpg"><br/>
+						攻击者用如下请求可以包含图片木马：<br/>
+						http://www.xxx.com/test.php?content=x.jpg
+					</p>
+				</section>
+				<section>
+					<h2>验证不充分之任意文件读取</h2>
+					<a href="http://www.wooyun.org/bugs/wooyun-2010-099218">案例</a>
+				</section>
+				<section>
+					<h2>验证不充分之变量覆盖</h2>
+					<p>
+						易受攻击的代码片段：<br/>
+ 						<img src="./img/3.jpg"><br/>
+						上面的代码首先检查用户的密码是否为"hello"，如果匹配的话，设置"$auth"
+						为"1"，即通过认证。之后如果"$suth"为"1"的话，就会显示一些重要信息。
+						这段代码假定"$auth"在没有设置值的时候是空的，但是攻击者可以创建任何
+						全局变量并赋值，通过类似"http://www.yxlink.com/test.php?auth=1"的方法，我
+						们完全可以欺骗这段代码，使它相信我们是已经认证过的。
+
+				</section>
+				<section>
+					<h2>验证不充分之越权操作</h2>
+					<img src="./img/4.jpg">
+				</section>
+				<section>
+					<h2>验证不充分之平行权限</h2>
+					<img src="./img/5.jpg">
+				</section>
+				<section>
+					<h2>逻辑漏洞</h2>
+					<p>
+						找回密码设计缺陷&nbsp;&nbsp;&nbsp;&nbsp;修改任意用户密码
+					<img src="./img/6.jpg">
+				</section>
+				<section>
+					<h2>解析漏洞</h2>
+				</section>
+				<section>
+					<h3>IIS解析漏洞</h3>
+				</section>
+				<section>
+					<h3>IIS 6.0解析漏洞</h3>
+					<ul>
+						<li class="fragment">
+							目录解析/test.asp/test.jpg
+						</li>
+						<li class="fragment">
+							文件解析/test.asp;1.jpg
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>IIS6.0 默认的可执行文件除了asp还包含这三种</h3>
+					<ul>
+						<li class="fragment">
+							/test.asa
+						</li>
+						<li class="fragment">
+							/test.cer
+						</li>
+						<li class="fragment">
+							/test.cdx
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>IIS7.5解析漏洞</h3>
+					<ul>
+						<li class="fragment">
+							a.aspx.a;.a.aspx.jpg..jpg
+						</li>
+						<li class="fragment">
+							Test.php;1.jpg
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Apache解析漏洞</h3>
+				</section>
+				<section>
+					<p>Apache 是从右到左开始判断解析，如果为不可识别解析，就再往左判断。</p>
+					<ul>
+						<li class="fragment">
+							/test.php.xxx
+						</li>
+						<li class="fragment">
+							/test.php.rar
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Nginx解析漏洞</h3>
+				</section>
+				<section>
+					<p>影响版本:0.5.,0.6., 0.7 <= 0.7.65, 0.8 <= 0.8.37</p>
+					<ul>
+						<li class="fragment">
+							/test.jpg/1.php
+						</li>
+						<li class="fragment">
+							/test.jpg%00.php
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>第三方漏洞</h2>
+					<ul>
+						<li class="fragment">
+							FCKeditor 编辑器上传漏洞，任意创建文件漏洞
+						</li>
+						<li class="fragment">
+							eWebEeditor编辑器，上传漏洞，遍历目录漏洞
+						</li>
+						<li class="fragment">
+							ThinkPHP任意代码执行漏洞
+						</li>
+						<li class="fragment">
+							Struts2远程命令执行漏洞
+						</li>
+						<li class="fragment">
+							Web中间件（Tomcat、Weblogic、Jboss）
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>信息泄露之目录遍历</h2>
+					<a href="http://localhost/bendibaohan.php">演示</a>
+				</section>	
+				<section>
+					<h2>信息泄露之IIS短文件</h2>
+				</section>		
+			</div>
+		</div>
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+		<script>
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
